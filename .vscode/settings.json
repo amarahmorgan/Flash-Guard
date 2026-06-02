@@ -1,0 +1,12 @@
+{
+    "cucumber.features": [
+        "tests/**/*.feature"
+    ],
+    "cucumber.glue": [
+        "tests/**/*.steps.ts"
+    ],
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.feature": "${basename}.fixture.ts, ${basename}.steps.ts, ${basename}.types.ts, ${basename}.data.json"
+    }
+}
