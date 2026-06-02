@@ -1,0 +1,24 @@
+{
+  "name": "flash-guard",
+  "version": "1.0.0",
+  "description": "Flash Guard Capstone Project",
+  "homepage": "https://github.com/amarahmorgan/Flash-Guard#readme",
+  "bugs": {
+    "url": "https://github.com/amarahmorgan/Flash-Guard/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amarahmorgan/Flash-Guard.git"
+  },
+  "license": "ISC",
+  "author": "Amarah Morgan",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {},
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
