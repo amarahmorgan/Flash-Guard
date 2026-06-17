@@ -3,7 +3,8 @@ import { defineBddConfig } from 'playwright-bdd';
 
 const testDir = defineBddConfig({
   features: 'tests/**/*.feature',
-  steps: ['tests/**/*.steps.ts', 'tests/**/*.fixture.ts']
+  steps: ['tests/**/*.steps.ts',  'src/fixtures/pages.fixture.ts'] ,
+
 });
 
 /**
@@ -18,7 +19,7 @@ const testDir = defineBddConfig({
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
+  testDir,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
