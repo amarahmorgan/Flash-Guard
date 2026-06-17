@@ -1,4 +1,5 @@
-import { test as base } from '@playwright/test';
+import { test as base } from 'playwright-bdd';
+import { expect } from '@playwright/test';
 
 import { LoginPage } from '../pages/LoginPage.js';
 import { DashboardPage } from '../pages/DashboardPage.js';
@@ -45,4 +46,4 @@ airtimeDataPage: async ({ page }, use) => {
 },
 });
 
-export { expect } from '@playwright/test';
+export { expect } ;
