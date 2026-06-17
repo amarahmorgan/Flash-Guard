@@ -51,6 +51,13 @@ export class LoginPage {
  async clickSignIn(): Promise<void> {
   await this.signInButton().click();
   await this.page.waitForURL('**/dashboard');
+
+ 
+}
+
+async signInWithDefaultUser(): Promise<void> {
+  await this.signInButton().click();
+  await this.page.waitForURL('**/dashboard');
 }
 
   // Custom login
@@ -61,6 +68,12 @@ export class LoginPage {
 
     await this.page.waitForURL('**/dashboard');
   }
+
+  async loginUnsuccessfully(email: string, password: string): Promise<void> {
+  await this.emailInput().fill(email);
+  await this.passwordInput().fill(password);
+  await this.signInButton().click();
+}
 
   // Assertions
   async expectLandingPageVisible(): Promise<void> {
