@@ -16,6 +16,8 @@ private transactionHistoryLink = () =>
   this.page.getByRole('link', { name: /transaction history/i });
  private airtimeDataLink = () =>
   this.page.getByRole('link', { name: /wifi_tethering airtime & data/i });
+ private signOutLink = () =>
+  this.page.getByRole('link', { name: /sign out/i });
 
   async goToDashboard(): Promise<void> {
     await this.dashboardLink().click();
@@ -34,6 +36,10 @@ private transactionHistoryLink = () =>
   }
   async goToAirtimeData(): Promise<void> {
   await this.airtimeDataLink().click();
+}
+
+async signOut(): Promise<void> {
+  await this.signOutLink().click();
 }
 
   async expectSidebarVisible(): Promise<void> {
