@@ -3,9 +3,12 @@ import { defineBddConfig } from 'playwright-bdd';
 
 const testDir = defineBddConfig({
   features: 'tests/**/*.feature',
-  steps: ['tests/**/*.steps.ts',  'src/fixtures/pages.fixture.ts'] ,
-
+  steps: [
+    'tests/**/*.steps.ts',
+    'src/fixtures/pages.fixture.ts'
+  ]
 });
+
 
 /**
  * Read environment variables from file.
