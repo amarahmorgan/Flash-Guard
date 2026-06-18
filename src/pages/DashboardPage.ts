@@ -44,6 +44,11 @@ export class DashboardPage {
     ).toBeVisible();
   }
 
+  async expectAccountInfoVisible(): Promise<void> {
+  await expect(this.aliceLedgerCard()).toBeVisible();
+  await expect(this.bobWalletCard()).toBeVisible();
+}
+
   async expectFinancialCardsVisible(): Promise<void> {
     await expect(
       this.totalNetWorthCard()
