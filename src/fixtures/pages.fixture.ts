@@ -46,4 +46,4 @@ airtimeDataPage: async ({ page }, use) => {
 },
 });
 
-export { expect } ;
+export { expect } from '@playwright/test'; 
