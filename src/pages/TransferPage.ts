@@ -36,6 +36,10 @@ export class TransferPage {
   private requiredFieldsMessage = () =>
     this.page.getByText('Please complete all required fields.');
 
+  // Error / toast messages
+  private invalidRecipientMessage = () =>
+  this.page.getByText('Sender/recipient not valid');
+
   // Actions
   async goToTransferFunds(): Promise<void> {
     await this.transferFundsNav().click();
@@ -80,4 +84,9 @@ export class TransferPage {
   async expectTodaySelected(): Promise<void> {
     await expect(this.todayButton()).toBeVisible();
   }
+
+  async expectInvalidRecipientMessageVisible(): Promise<void> {
+  await expect(this.invalidRecipientMessage()).toBeVisible();
 }
+}
+
