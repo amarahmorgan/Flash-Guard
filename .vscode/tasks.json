@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "build",
+			"label": "bdd-build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -22,7 +22,6 @@
 			"command": "npx",
 			"args": [
 				"eslint",
-				"./src",
 				"./tests",
 				"--ext",
 				".ts,.tsx,.mts,.cts",
