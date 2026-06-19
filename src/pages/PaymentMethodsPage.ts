@@ -33,6 +33,9 @@ export class PaymentMethodsPage {
   private emptyStateMessage = () =>
     this.page.getByText('No payment methods added yet');
 
+   private successToast = () =>
+    this.page.getByRole('status');
+
   async expectPaymentMethodsPageVisible(): Promise<void> {
     await expect(this.pageHeading()).toBeVisible();
     await expect(this.addPaymentMethodButton()).toBeVisible();
@@ -63,6 +66,12 @@ export class PaymentMethodsPage {
     await this.expiryDateInput().fill(expiryDate);
     await this.cvvInput().fill(cvv);
     await this.addCardButton().click();
+  }
+
+   async expectPaymentMethodAddedSuccessfully(): Promise<void> {
+    await expect(this.successToast()).toContainText(
+      'Payment method added successfully'
+    );
   }
 
   async cancelAddPaymentMethod(): Promise<void> {
