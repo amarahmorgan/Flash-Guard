@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
 export class DashboardPage {
-  constructor(private readonly page: Page) {}
+  constructor(private readonly page: Page) { }
 
   // Dashboard Header
   private portfolioOverviewHeading = () =>
@@ -11,11 +11,11 @@ export class DashboardPage {
   private totalNetWorthCard = () =>
     this.page.getByText('TOTAL NET WORTH');
 
-  private aliceLedgerCard = () =>
-    this.page.getByText('Alice Ledger');
+private aliceLedgerCard = () =>
+  this.page.getByRole('heading', { name: 'Alice Ledger' });
 
-  private bobWalletCard = () =>
-    this.page.getByText('Bob Wallet');
+private bobWalletCard = () =>
+  this.page.getByRole('heading', { name: 'Bob Wallet' });
 
   // Dashboard Actions
   private buyAirtimeCard = () =>
@@ -36,7 +36,30 @@ export class DashboardPage {
   private viewAllTransactionsLink = () =>
     this.page.getByText('View All');
 
-  // Assertions
+private firstRecentTransaction = () =>
+  this.page
+    .locator('div')
+    .filter({ hasText: /transfer|airtime|payment|wallet|ledger/i })
+    .first();
+private totalNetWorthAmount = () =>
+  this.page.getByText(/R\s?\d+[\s\d]*,\d{2}/).first();
+
+private aliceLedgerBalance = () =>
+  this.page.locator('div').filter({ hasText: /Alice Ledger[\s\S]*R\s?\d+/ }).first();
+
+private bobWalletBalance = () =>
+  this.page.locator('div').filter({ hasText: /Bob Wallet[\s\S]*R\s?\d+/ }).first();
+
+// Assertions
+async expectBalanceAmountsVisible(): Promise<void> {
+  await expect(this.totalNetWorthAmount()).toBeVisible();
+  await expect(this.aliceLedgerBalance()).toBeVisible();
+  await expect(this.bobWalletBalance()).toBeVisible();
+}
+  async expectRecentTransactionsListVisible(): Promise<void> {
+    await expect(this.recentTransactionsSection()).toBeVisible();
+    await expect(this.firstRecentTransaction()).toBeVisible();
+  }
 
   async expectDashboardVisible(): Promise<void> {
     await expect(
@@ -45,9 +68,9 @@ export class DashboardPage {
   }
 
   async expectAccountInfoVisible(): Promise<void> {
-  await expect(this.aliceLedgerCard()).toBeVisible();
-  await expect(this.bobWalletCard()).toBeVisible();
-}
+    await expect(this.aliceLedgerCard()).toBeVisible();
+    await expect(this.bobWalletCard()).toBeVisible();
+  }
 
   async expectFinancialCardsVisible(): Promise<void> {
     await expect(
