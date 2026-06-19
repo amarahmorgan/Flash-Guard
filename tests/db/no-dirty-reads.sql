@@ -14,3 +14,5 @@ WAITFOR DELAY '00:00:30';
 SELECT balance
 FROM dbo.accounts
 WHERE id = 1;
+
+
