@@ -18,3 +18,11 @@ Then('I should see recent transactions', async ({ dashboardPage }) => {
 Then('I should see account information', async ({ dashboardPage }) => {
   await dashboardPage.expectAccountInfoVisible();
 });
+
+Then('I should see the recent transactions list', async ({ dashboardPage }) => {
+  await dashboardPage.expectRecentTransactionsListVisible();
+});
+
+Then('I should see the dashboard balance amounts', async ({ dashboardPage }) => {
+  await dashboardPage.expectBalanceAmountsVisible();
+});
