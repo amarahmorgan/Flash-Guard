@@ -15,3 +15,11 @@ Feature: Dashboard
   Scenario: T-UI-DASH-004 Verify account information display
     Given I am logged in
     Then I should see account information
+
+  Scenario: T-UI-DASH-003 Verify recent transactions list
+    Given I am logged in
+    Then I should see the recent transactions list
+
+  Scenario: T-UI-DASH-002 Verify balance display accuracy
+    Given I am logged in
+    Then I should see the dashboard balance amounts
