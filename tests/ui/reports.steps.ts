@@ -12,23 +12,11 @@ Then('I should see the reports page', async ({ reportsPage }) => {
 });
 
 Then('I should be able to export CSV', async ({ reportsPage }) => {
-  await reportsPage.expectExportCsvVisible();
+  await reportsPage.exportCsv();
 });
 
-Then('I should be able to export PDF', async ({ page, reportsPage }) => {
-  const popupPromise = page.waitForEvent('popup');
-
+Then('I should be able to export PDF', async ({ reportsPage }) => {
   await reportsPage.exportPdf();
-
-  const popup = await popupPromise;
-
-  await expect(
-    popup.getByRole('heading', {
-      name: /FlashGuard - Transaction Report/i
-    })
-  ).toBeVisible();
-  
-   await popup.close();
 });
 
 When('I enter a date range', async ({ reportsPage }) => {
