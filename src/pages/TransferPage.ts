@@ -14,6 +14,9 @@ export class TransferPage {
   private aliceLedgerRecipient = () =>
     this.page.getByText('Alice Ledger').first();
 
+  private charlieFrozenRecipient = () =>
+  this.page.getByText('Charlie Frozen').first();
+
   private mobileServicesRecipient = () =>
     this.page.getByText('FlashGuard Mobile Services').first();
 
@@ -52,6 +55,10 @@ export class TransferPage {
   async selectAliceLedger(): Promise<void> {
     await this.aliceLedgerRecipient().click();
   }
+
+  async selectCharlieFrozen(): Promise<void> {
+  await this.charlieFrozenRecipient().click();
+}
 
   async selectMobileServices(): Promise<void> {
     await this.mobileServicesRecipient().click();
