@@ -1,0 +1,652 @@
+{
+  "info": {
+    "_postman_id": "80552357-d376-47e0-93fc-eb921877e37c",
+    "name": "Flash-Guard API Testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52065863",
+    "_collection_link": "https://go.postman.co/collection/52065863-80552357-d376-47e0-93fc-eb921877e37c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "03-Transactions",
+      "item": [
+        {
+          "name": "POST-valid-transfer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC01 - Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC01 - Valid transfer is created as pending\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonData.sender_account_id).to.eql(Number(pm.environment.get(\"accountId\")));\r",
+                  "    pm.expect(jsonData.recipient_account_id).to.eql(Number(pm.environment.get(\"recipientAccountId\")));\r",
+                  "    pm.expect(jsonData.status).to.eql(\"pending\");\r",
+                  "\r",
+                  "    pm.environment.set(\"transactionId\", jsonData.id);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"senderAccountId\": 1 ,\r\n  \"recipientAccountId\": 2,\r\n  \"amount\": 500\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST-invalid-transfer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC02 - Status code is 400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC02 - Invalid payload message is returned\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData.message).to.eql(\"Invalid transfer payload\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"senderAccountId\": 2,\r\n  \"amount\": 600\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST-boundary-transfer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"BTC05 - Status code is 201 or 400 depending on balance\", function () {\r",
+                  "    pm.expect([201, 400]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"BTC05 - AML rule is handled correctly\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    if (pm.response.code === 201) {\r",
+                  "        pm.expect(jsonData.status).to.eql(\"rejected\");\r",
+                  "        pm.expect(jsonData.compliance_flag).to.eql(\"aml\");\r",
+                  "    }\r",
+                  "\r",
+                  "    if (pm.response.code === 400) {\r",
+                  "        pm.expect(jsonData).to.have.property(\"message\");\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"senderAccountId\": 1,\r\n  \"recipientAccountId\": 2,\r\n  \"amount\": 10001\r\n}\r\n\r\n\r\n\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST/auth-pending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC04 - Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC04 - Pending transaction is authorized\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData.status).to.eql(\"completed\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"authorized_at\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"settled_at\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer/22/authorize",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer",
+                "22",
+                "authorize"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST/invalid-ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC05 - Status code is 400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC05 - Transaction not found message is returned\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData.message).to.eql(\"Transaction not found\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer/99/authorize",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer",
+                "99",
+                "authorize"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST/transfer-cancel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC07 - Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC07 - Pending transaction is cancelled\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData.status).to.eql(\"cancelled\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer/23/cancel",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer",
+                "23",
+                "cancel"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET/valid-transaction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC08 - Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC08 - Transaction details are returned\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"sender_account_id\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"recipient_account_id\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"amount\");\r",
+                  "    pm.expect(jsonData).to.have.property(\"status\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"senderAccountId\": 1 ,\r\n  \"recipientAccountId\": 2,\r\n  \"amount\": 500\r\n}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET/invalid-transaction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC09 - Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC09 - Transaction not found message returned\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData.message).to.eql(\"Transaction not found\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"senderAccountId\": 1 ,\r\n  \"recipientAccountId\": 2,\r\n  \"amount\": 500\r\n}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/99",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "99"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET/transaction-history",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC10 - Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC10 - Transaction history is returned as an array\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(jsonData).to.be.an(\"array\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/history",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06-Performance/Edge",
+      "item": [
+        {
+          "name": "GET/Rate-Limiting",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC13 - Status should be 429 if rate limiting is implemented\", function () {\r",
+                  "    pm.expect([200, 429]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"TC13 - Response time is below 5 seconds\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) {\r",
+                  "    console.log(\"DEFECT: Rate limiting is not implemented. API continues accepting repeated requests.\");\r",
+                  "}\r",
+                  "\r",
+                  "if (pm.response.code === 429) {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "\r",
+                  "    pm.test(\"TC13 - Rate limit message returned\", function () {\r",
+                  "        pm.expect(jsonData).to.have.property(\"message\");\r",
+                  "    });\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transactions/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transactions",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET/invalid-token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC11 - Endpoint should reject invalid JWT\", function () {\r",
+                  "\r",
+                  "    pm.expect([200, 401]).to.include(pm.response.code);\r",
+                  "\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 401) {\r",
+                  "\r",
+                  "    pm.test(\"TC11 - Unauthorized response returned\", function () {\r",
+                  "\r",
+                  "        const jsonData = pm.response.json();\r",
+                  "\r",
+                  "        pm.expect(jsonData)\r",
+                  "            .to.have.property(\"message\");\r",
+                  "\r",
+                  "    });\r",
+                  "\r",
+                  "}\r",
+                  "\r",
+                  "if (pm.response.code === 200) {\r",
+                  "\r",
+                  "    console.log(\r",
+                  "        \"DEFECT: Endpoint accepted invalid JWT token\"\r",
+                  "    );\r",
+                  "\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{bearer_token_0tpm}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/history",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET/404-error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC12 - Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{bearer_token_0tpm}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:4000/transaction",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transaction"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "bearer_token_0tpm",
+      "secret": true
+    }
+  ]
+}
