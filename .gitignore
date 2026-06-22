@@ -3,3 +3,9 @@ dist/
 playwright-report/
 test-results/
 node_modules/
+# Mobile generated files
+tests/mobile/mobile/.expo/
+tests/mobile/mobile/node_modules/
+tests/mobile/mobile/playwright-report-mobile-bdd/
+tests/mobile/mobile/test-results/
+reports/mobile-report/
