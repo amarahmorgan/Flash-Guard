@@ -1,0 +1,108 @@
+{
+  "info": {
+    "_postman_id": "0424e683-8dba-4331-9ed9-6bb14118dad3",
+    "name": "Capstone scenario 2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52066886",
+    "_collection_link": "https://go.postman.co/collection/52066886-0424e683-8dba-4331-9ed9-6bb14118dad3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Failed Compliance",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"senderAccountId\": \"1\",\r\n    \"recipientAccountId\": \"3\",\r\n    \"amount\":100\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/transactions/transfer",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "transactions",
+            "transfer"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Failed Compliance",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"senderAccountId\": \"1\",\r\n    \"recipientAccountId\": \"3\",\r\n    \"amount\":100\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:4000/transactions/transfer",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "transactions",
+                "transfer"
+              ]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "40"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"28-GdLv+e79kzvtzaIw/WCSrOBmL+Q\""
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 20 Jun 2026 10:20:44 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Sender/recipient not valid\"\n}"
+        }
+      ]
+    }
+  ]
+}
