@@ -1,0 +1,22 @@
+{
+  "validUser": {
+    "email": "alice@flashguard.local",
+    "password": "offline-demo"
+  },
+  "invalidUser": {
+    "email": "wrong-user@flashguard.local",
+    "password": "WrongPassword123"
+  },
+  "transfer": {
+    "recipientSearch": "Alice",
+    "recipientName": "Alice Motsepe",
+    "amount": "100.50",
+    "reference": "Mobile BDD Transfer",
+    "otp": "123456"
+  },
+  "airtime": {
+    "phone": "825551234",
+    "network": "MTN",
+    "amount": "50"
+  }
+}
