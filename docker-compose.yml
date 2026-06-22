@@ -1,1 +1,112 @@
 #containerisation
+name: flash-guard-qe
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: fg-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:-YourStrong!Passw0rd}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools18:latest
+    container_name: fg-db-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD:-YourStrong!Passw0rd}
+      DB_NAME: ${DB_NAME:-FlashGuard}
+    volumes:
+      - ${APP_ROOT:-../FlashGuard}/db/init:/db/init:ro
+    command: >
+      /bin/bash -c "
+      /opt/mssql-tools18/bin/sqlcmd -C -S sqlserver -U sa -P \"$$DB_PASSWORD\" -d master -i /db/init/01-schema.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -C -S sqlserver -U sa -P \"$$DB_PASSWORD\" -d \"$$DB_NAME\" -i /db/init/99-reset-and-seed.sql
+      "
+    restart: "no"
+
+  api:
+    build:
+      context: ${APP_ROOT:-../FlashGuard}/api
+      dockerfile: Dockerfile
+    container_name: fg-api
+    environment:
+      NODE_ENV: test
+      PORT: 4000
+      DB_HOST: sqlserver
+      DB_PORT: 1433
+      DB_NAME: ${DB_NAME:-FlashGuard}
+      DB_USER: sa
+      DB_PASSWORD: ${DB_PASSWORD:-YourStrong!Passw0rd}
+      JWT_SECRET: ${JWT_SECRET:-flash-guard-test-secret}
+    ports:
+      - "4000:4000"
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: ${APP_ROOT:-../FlashGuard}/web
+      dockerfile: Dockerfile
+    container_name: fg-web
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_started
+
+  # This is only a browser preview of the supplied mobile project.
+  # Native Android/Appium execution still runs locally against an emulator.
+  mobile-preview:
+    build:
+      context: ${APP_ROOT:-../FlashGuard}/mobile
+      dockerfile: Dockerfile
+    container_name: fg-mobile-preview
+    profiles: ["mobile-preview"]
+    ports:
+      - "3001:80"
+    depends_on:
+      api:
+        condition: service_started
+
+  # Runs every SQL verification script found in this QE repository.
+  # Start it only when needed:
+  # docker compose --profile verify run --rm db-verify
+  db-verify:
+    image: mcr.microsoft.com/mssql-tools18:latest
+    profiles: ["verify"]
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD:-YourStrong!Passw0rd}
+      DB_NAME: ${DB_NAME:-FlashGuard}
+    volumes:
+      - ./tests/db:/tests/db:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      for file in /tests/db/*.sql; do
+        echo "Running $$(basename "$$file")";
+        /opt/mssql-tools18/bin/sqlcmd -C -b -S sqlserver -U sa -P "$$DB_PASSWORD" -d "$$DB_NAME" -i "$$file";
+      done
+
+volumes:
+  sqlserver_data:
