@@ -1,0 +1,74 @@
+name: Docker Stack Validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docker-compose.yml'
+      - '.github/workflows/docker.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docker-compose.yml'
+      - '.github/workflows/docker.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-stack:
+    name: Build and start FlashGuard stack
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout QE repository
+        uses: actions/checkout@v4
+
+      - name: Checkout supplied FlashGuard application
+        uses: actions/checkout@v4
+        with:
+          repository: Anoonaa/FlashGuard
+          path: FlashGuard-app
+
+      - name: Validate Docker Compose configuration
+        env:
+          APP_ROOT: ${{ github.workspace }}/FlashGuard-app
+          DB_PASSWORD: YourStrong!Passw0rd
+          DB_NAME: FlashGuard
+          JWT_SECRET: flash-guard-ci-secret
+        run: docker compose config
+
+      - name: Build API and web images
+        env:
+          APP_ROOT: ${{ github.workspace }}/FlashGuard-app
+          DB_PASSWORD: YourStrong!Passw0rd
+          DB_NAME: FlashGuard
+          JWT_SECRET: flash-guard-ci-secret
+        run: docker compose build api web
+
+      - name: Start SQL Server, API and web application
+        env:
+          APP_ROOT: ${{ github.workspace }}/FlashGuard-app
+          DB_PASSWORD: YourStrong!Passw0rd
+          DB_NAME: FlashGuard
+          JWT_SECRET: flash-guard-ci-secret
+        run: |
+          docker compose up -d sqlserver db-init api web
+          for attempt in {1..36}; do
+            if curl --fail --silent http://localhost:4000/health; then
+              break
+            fi
+            sleep 5
+          done
+          curl --fail --silent http://localhost:4000/health
+          curl --fail --silent http://localhost:3000 > /dev/null
+
+      - name: Show Docker services
+        if: always()
+        run: docker compose ps
+
+      - name: Stop Docker stack
+        if: always()
+        run: docker compose down -v
