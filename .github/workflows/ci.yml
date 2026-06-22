@@ -1,0 +1,42 @@
+name: QE Repository CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qe-quality-checks:
+    name: Build and validate QE repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout QE repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Type-check TypeScript
+        run: npm run build
+
+      - name: Generate Playwright-BDD tests
+        run: npm run bddgen
+
+      - name: Validate Playwright test discovery
+        run: npx playwright test --list
