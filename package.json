@@ -16,7 +16,7 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "bddgen": "npx bddgen",
+    "bddgen": "npx bddgen --config=playwright.config.ts",
     "test:ui": "npm run bddgen && playwright test",
     "lint": "eslint . --ignore-pattern \"tests/mobile/mobile/**\" --ignore-pattern \"dist/**\" --ignore-pattern \"reports/**\" --ignore-pattern \"test-results/**\" --ignore-pattern \"playwright-report/**\" --ignore-pattern \".features-gen/**\"",
     "typecheck": "tsc --noEmit"

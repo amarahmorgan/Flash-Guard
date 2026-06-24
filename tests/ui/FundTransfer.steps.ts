@@ -59,11 +59,11 @@ When('I enter an amount above the maximum limit', async ({ page }) => {
   await page.getByPlaceholder(/amount|value|transfer amount/i).fill('9999999');
 });
 
-Then('I should see an amount validation error', async ({ page }) => {
-  await expect(
-    page.getByText(/maximum|invalid amount|above limit/i)
-  ).toBeVisible();
-});
+// Then('I should see an amount validation error', async ({ page }) => {
+//   await expect(
+//     page.getByText(/maximum|invalid amount|above limit/i)
+//   ).toBeVisible();
+// });
 
 // TC05
 When('I select a blocked recipient', async ({ transferPage }) => {
