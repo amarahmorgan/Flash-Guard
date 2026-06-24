@@ -32,6 +32,8 @@
     "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-jsdoc": "^63.0.1",
     "globals": "^17.6.0",
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1",
     "playwright-bdd": "^8.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
